@@ -21,40 +21,78 @@ interface HomepageData {
     content: string;
     image: string;
   };
+  featuredTracks: Array<{ id: string }>;
+  latestNews: Array<{ id: string }>;
+  upcomingShows: Array<{ id: string }>;
   featuredProducts: Array<{ id: string }>;
 }
 
 export default function Home() {
   const [data, setData] = useState<HomepageData>({
     heroSection: {
-      title: 'The Gray Stars',
-      subtitle: 'Experience the fusion of classic rock and modern edge',
-      backgroundImage: '/images/background.jpg',
+      title: 'Welcome to The Gray Stars',
+      subtitle: 'Experience the fusion of classic and modern rock',
+      backgroundImage: '/images/hero-background.jpg'
     },
     aboutSection: {
       title: 'About Us',
-      content: 'Welcome to TheGrayStars',
-      image: '/images/about-background.jpg',
+      content: 'The Gray Stars is a dynamic rock band that emerged from the vibrant music scene of Montreal.',
+      image: '/images/about-background.jpg'
     },
-    featuredProducts: [],
+    featuredTracks: [],
+    latestNews: [],
+    upcomingShows: [],
+    featuredProducts: []
   });
+
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchHomepageData = async () => {
     try {
+      setLoading(true);
       const response = await fetch(API_ENDPOINTS.HOMEPAGE);
       if (!response.ok) {
-        throw new Error('Failed to fetch homepage data');
+        throw new Error(`Failed to fetch homepage data: ${response.statusText}`);
       }
       const homepageData = await response.json();
-      setData(homepageData);
+      // Only update state if we have valid data
+      if (homepageData && typeof homepageData === 'object') {
+        setData(prevData => ({
+          ...prevData,
+          ...homepageData
+        }));
+      }
     } catch (error) {
       console.error('Error fetching homepage data:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load homepage data');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchHomepageData();
   }, []);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Oops!</h1>
+          <p className="text-xl">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
 
   return (
     <main className="relative bg-black">

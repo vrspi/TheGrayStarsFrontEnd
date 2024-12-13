@@ -29,14 +29,15 @@ interface BandMembersProps {
 
 export default function BandMembers({ members: initialMembers }: BandMembersProps) {
   const [members, setMembers] = useState<BandMember[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     async function fetchMembers() {
       try {
+        setLoading(true);
         const response = await fetch(API_ENDPOINTS.BAND_MEMBERS);
         if (!response.ok) {
           throw new Error(`Failed to fetch band members: ${response.statusText}`);
@@ -56,6 +57,30 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
     }
     fetchMembers();
   }, []);
+
+  if (error) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (members.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p>No band members found.</p>
+      </div>
+    );
+  }
 
   // Create infinite scroll effect by duplicating members
   const duplicatedMembers = [...members, ...members, ...members];
@@ -100,22 +125,6 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
       }
     };
   }, [members, isHovered]);
-
-  if (loading) {
-    return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-primary-red border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-red-500">
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
