@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from '../../config/api';
 
 interface MusicTrack {
   id: number;

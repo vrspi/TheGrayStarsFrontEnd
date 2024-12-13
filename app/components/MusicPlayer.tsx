@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { FaPlay, FaPause, FaStepForward, FaStepBackward, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 import { BsShuffle, BsRepeat } from 'react-icons/bs';
 import YouTube from 'react-youtube';
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 interface Track {
   id: number;

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
 import { FaInstagram, FaTwitter, FaFacebook } from 'react-icons/fa';
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 interface SocialLinks {
   facebook?: string;
