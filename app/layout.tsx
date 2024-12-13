@@ -1,13 +1,19 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter, Roboto } from 'next/font/google'
-import Navigation from '../components/Navigation'
-import Footer from '../components/Footer'
+import Navigation from './components/Navigation'
+import Footer from './components/Footer'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter'
+})
+
 const roboto = Roboto({ 
   weight: ['400', '500', '700'],
   subsets: ['latin'],
+  display: 'swap',
   variable: '--font-roboto'
 })
 
@@ -22,14 +28,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} ${roboto.variable} font-sans bg-primary-gray text-primary-light min-h-screen flex flex-col`}>
+    <html lang="en" className={`${inter.variable} ${roboto.variable}`}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </head>
+      <body className="min-h-screen bg-primary-black text-white flex flex-col">
         <Navigation />
-        <main className="pt-16 flex-grow">
+        <main className="flex-grow">
           {children}
         </main>
         <Footer />
       </body>
     </html>
   )
-} 
+}

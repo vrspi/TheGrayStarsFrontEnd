@@ -20,11 +20,21 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'encrypted-tbn0.gstatic.com',
-      }
     ],
+  },
+  // Enable static exports
+  output: 'standalone',
+  // Enable CSS optimization
+  optimizeFonts: true,
+  compiler: {
+    // Remove console logs in production
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  experimental: {
+    // Enable modern CSS features
+    optimizeCss: true,
+    // Enable modern JavaScript features
+    optimizePackageImports: ['framer-motion'],
   },
 }
 
