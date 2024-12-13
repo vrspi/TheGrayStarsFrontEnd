@@ -1,0 +1,7 @@
+Place MP3 files here:
+1. track1.mp3
+2. track2.mp3
+3. track3.mp3
+4. track4.mp3
+
+You can use your own MP3 files or download royalty-free music.
