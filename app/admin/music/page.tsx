@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { API_ENDPOINTS } from '@/config/api';
 
 interface MusicTrack {
   id: number;
@@ -28,7 +29,7 @@ export default function MusicManagement() {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('http://localhost:3001/api/music');
+      const response = await fetch(API_ENDPOINTS.MUSIC);
       if (!response.ok) {
         throw new Error('Failed to fetch music tracks');
       }
@@ -47,7 +48,7 @@ export default function MusicManagement() {
     if (!selectedTrack) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/music${selectedTrack.id ? `/${selectedTrack.id}` : ''}`, {
+      const response = await fetch(`${API_ENDPOINTS.MUSIC}${selectedTrack.id ? `/${selectedTrack.id}` : ''}`, {
         method: selectedTrack.id ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,7 +72,7 @@ export default function MusicManagement() {
     if (!confirm('Are you sure you want to delete this track?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/music/${id}`, {
+      const response = await fetch(`${API_ENDPOINTS.MUSIC}/${id}`, {
         method: 'DELETE',
       });
 
@@ -324,4 +325,4 @@ export default function MusicManagement() {
       </div>
     </div>
   );
-} 
+}

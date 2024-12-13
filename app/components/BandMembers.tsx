@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useRef } from 'react';
 import { FaInstagram, FaTwitter, FaFacebook } from 'react-icons/fa';
+import { API_ENDPOINTS } from '@/config/api';
 
 interface SocialLinks {
   facebook?: string;
@@ -36,7 +37,7 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
   useEffect(() => {
     async function fetchMembers() {
       try {
-        const response = await fetch('http://localhost:3001/api/band-members');
+        const response = await fetch(API_ENDPOINTS.BAND_MEMBERS);
         if (!response.ok) {
           throw new Error('Failed to fetch band members');
         }
