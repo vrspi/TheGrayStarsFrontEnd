@@ -8,6 +8,7 @@ import BandMembers from './components/BandMembers';
 import MusicPlayer from './components/MusicPlayer';
 import ParallaxContainer from './components/ParallaxContainer';
 import ParallaxSection from './components/ParallaxSection';
+import { API_ENDPOINTS } from './config/api';
 
 interface HomepageData {
   heroSection: {
@@ -38,17 +39,21 @@ export default function Home() {
     featuredProducts: [],
   });
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await fetch('http://localhost:3001/api/homepage');
-        const homepageData = await response.json();
-        setData(homepageData);
-      } catch (error) {
-        console.error('Error fetching homepage data:', error);
+  const fetchHomepageData = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.HOMEPAGE);
+      if (!response.ok) {
+        throw new Error('Failed to fetch homepage data');
       }
+      const homepageData = await response.json();
+      setData(homepageData);
+    } catch (error) {
+      console.error('Error fetching homepage data:', error);
     }
-    fetchData();
+  };
+
+  useEffect(() => {
+    fetchHomepageData();
   }, []);
 
   return (

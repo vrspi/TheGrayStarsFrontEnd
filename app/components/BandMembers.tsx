@@ -39,16 +39,18 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
       try {
         const response = await fetch(API_ENDPOINTS.BAND_MEMBERS);
         if (!response.ok) {
-          throw new Error('Failed to fetch band members');
+          throw new Error(`Failed to fetch band members: ${response.statusText}`);
         }
         const data = await response.json();
         console.log('Fetched members:', data);
-        const sortedMembers = data.sort((a: BandMember, b: BandMember) => a.display_order - b.display_order);
+        const sortedMembers = Array.isArray(data) 
+          ? data.sort((a: BandMember, b: BandMember) => (a.display_order || 0) - (b.display_order || 0))
+          : [];
         setMembers(sortedMembers);
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching band members:', error);
-        setError('Failed to load band members');
+        setError(error instanceof Error ? error.message : 'Failed to load band members');
+      } finally {
         setLoading(false);
       }
     }
