@@ -35,6 +35,8 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchMembers() {
       try {
         setLoading(true);
@@ -44,19 +46,69 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
         }
         const data = await response.json();
         console.log('Fetched members:', data);
-        const sortedMembers = Array.isArray(data) 
-          ? data.sort((a: BandMember, b: BandMember) => (a.display_order || 0) - (b.display_order || 0))
-          : [];
-        setMembers(sortedMembers);
+        if (isMounted) {
+          const sortedMembers = Array.isArray(data) 
+            ? data.sort((a: BandMember, b: BandMember) => (a.display_order || 0) - (b.display_order || 0))
+            : [];
+          setMembers(sortedMembers);
+        }
       } catch (error) {
         console.error('Error fetching band members:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load band members');
+        if (isMounted) {
+          setError(error instanceof Error ? error.message : 'Failed to load band members');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
+
     fetchMembers();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  useEffect(() => {
+    if (!containerRef.current || members.length === 0) return;
+    
+    let animationFrameId: number;
+    let startTime: number;
+    let totalDuration = 30000; // 30 seconds for one complete loop
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      if (!containerRef.current) return;
+
+      const elapsed = timestamp - startTime;
+      const progress = (elapsed % totalDuration) / totalDuration;
+      
+      const totalWidth = containerRef.current.scrollWidth / 3;
+      const newScrollPosition = progress * totalWidth;
+      
+      if (containerRef.current.scrollLeft >= totalWidth) {
+        // Reset to first set of items when we reach the second set
+        containerRef.current.scrollLeft = newScrollPosition;
+        startTime = timestamp;
+      } else {
+        containerRef.current.scrollLeft = newScrollPosition;
+      }
+
+      if (!isHovered) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [members, isHovered]);
 
   if (error) {
     return (
@@ -84,47 +136,6 @@ export default function BandMembers({ members: initialMembers }: BandMembersProp
 
   // Create infinite scroll effect by duplicating members
   const duplicatedMembers = [...members, ...members, ...members];
-
-  // Smooth auto-scroll effect
-  useEffect(() => {
-    if (!containerRef.current || members.length === 0) return;
-    
-    const scrollContainer = containerRef.current;
-    let animationFrameId: number;
-    let startTime: number;
-    const totalDuration = 30000; // 30 seconds for one complete loop
-
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      if (!scrollContainer) return;
-
-      const elapsed = timestamp - startTime;
-      const progress = (elapsed % totalDuration) / totalDuration;
-      
-      const totalWidth = scrollContainer.scrollWidth / 3;
-      const newScrollPosition = progress * totalWidth;
-      
-      if (scrollContainer.scrollLeft >= totalWidth) {
-        // Reset to first set of items when we reach the second set
-        scrollContainer.scrollLeft = newScrollPosition;
-        startTime = timestamp;
-      } else {
-        scrollContainer.scrollLeft = newScrollPosition;
-      }
-
-      if (!isHovered) {
-        animationFrameId = requestAnimationFrame(animate);
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [members, isHovered]);
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
